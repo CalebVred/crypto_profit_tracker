@@ -1,7 +1,6 @@
 from pycoingecko import CoinGeckoAPI
 import csv
 
-
 with open('crypto.csv', 'r') as csvledger:
     #Inside a csv file...
     reader = csv.reader(csvledger,  skipinitialspace=True)
