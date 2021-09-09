@@ -1,3 +1,4 @@
+'''Text-based cryptocurrency profit tracker that culaculates profits based off of info from CSV file'''
 from pycoingecko import CoinGeckoAPI
 import csv
 
