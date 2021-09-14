@@ -4,36 +4,44 @@ import csv
 import sys
 import argparse
 def main():
-    parser = argparse.ArgumentParser(description='Calculate profits of crypto purchase based on current CoinGecko pricing')
-    
-    #Arguments for using data entered on command line
-    parser.add_argument('crypto_token', metavar= "T", nargs=1, help='the corresponding cryptocurrency Token as featured on CoinGecko')
-    parser.add_argument('amount_bought', metavar= "A", type=float, nargs=1, help='the Amount of cryptocurrency purchased')
-    # parser.add_argument('date_purchased', metavar= "D", nargs=1, help='the Date of purchase using MM-DD-YYYY formatting')
-    parser.add_argument('money_spent', metavar= "S", type=float, nargs=1, help='amount of host currency Spent')
-    parser.add_argument('host_currency', metavar="H", nargs=1, help="abbreviated name of Host currency (e.g. 'eur', 'usd'")
 
-    cg = CoinGeckoAPI()
+    print("Argument vector", sys.argv)
+    print("Argument vector length", len(sys.argv))
 
 
+    if (len(sys.argv) > 1):
+        parser = argparse.ArgumentParser(description='Calculate profits of crypto purchase based on current CoinGecko pricing')
 
-    args = parser.parse_args()
-    #Current price calculation
-    #Current data
-    cgdatac=cg.get_price(ids=args.crypto_token, vs_currencies = args.host_currency)
+        #Arguments for using data entered on command line
+        parser.add_argument('crypto_token', metavar= "T", nargs=1, help='the corresponding cryptocurrency Token as featured on CoinGecko')
+        parser.add_argument('amount_bought', metavar= "A", type=float, nargs=1, help='the Amount of cryptocurrency purchased')
+        # parser.add_argument('date_purchased', metavar= "D", nargs=1, help='the Date of purchase using MM-DD-YYYY formatting')
+        parser.add_argument('money_spent', metavar= "S", type=float, nargs=1, help='amount of host currency Spent')
+        parser.add_argument('host_currency', metavar="H", nargs=1, help="abbreviated name of Host currency (e.g. 'eur', 'usd'")
 
-    print("token:", args.crypto_token)
-    print("currency:", args.host_currency)
-    print("amt bought:", args.amount_bought)
+        cg = CoinGeckoAPI()
 
-    #current value of purchase
-    cvp = return_current_value(cgdatac, args.crypto_token, args.host_currency, args.amount_bought)
 
-    print("Current value of purchase", cvp)
-    
 
-    #Arguments for using data from .csv file    
-    if(len(sys.argv) == 0):
+        args = parser.parse_args()
+        #Current price calculation
+        #Current data
+        cgdatac=cg.get_price(ids=args.crypto_token, vs_currencies = args.host_currency)
+
+        print("token:", args.crypto_token)
+        print("currency:", args.host_currency)
+        print("amt bought:", args.amount_bought)
+
+        #current value of purchase
+        cvp = return_current_value(cgdatac, args.crypto_token[0], args.host_currency[0], args.amount_bought[0])
+
+        print("Current value of purchase", cvp)
+        profit = cvp - args.money_spent[0]
+        print("Profit from purchase:", profit)
+        percent_delta = profit/cvp
+        print("Percent change:", percent_delta)
+        
+    else:
         
         with open('crypto.csv', 'r') as csvledger:
             #Inside a csv file...
@@ -52,7 +60,7 @@ def main():
                 print("Date purchased:", dp)
 
                 #Currency
-                cry = row[3]
+                cry = row[4]
                 print("Currency used:", cry)
 
 
@@ -67,7 +75,7 @@ def main():
                 cgdatac=cg.get_price(ids=id, vs_currencies = cry)
                 
                 #current value of purchase
-                cvp = return_current_value(cgdatac, cry, amt)
+                cvp = return_current_value(cgdatac, id, cry, amt)
                 
                 print("Current value of purchase:", cvp)
                 
@@ -99,14 +107,14 @@ return_current_value
 @output: money_spent - float representing current value of purchase
 '''
 def return_current_value(cgd, crypto, currency, amount):
-    cid = cgd[crypto[0]]
+    cid = cgd[crypto]
 
     #current price
-    cpr = cid[currency[0]]
+    cpr = cid[currency]
     print("Current price:",cpr)
 
     #current value of purchase
-    cvp = cpr * float(amount[0])
+    cvp = cpr * float(amount)
 
     return cvp
 
