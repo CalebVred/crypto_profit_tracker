@@ -1,4 +1,4 @@
-'''Text-based cryptocurrency profit tracker that culaculates profits based off of info from CSV file'''
+'''Text-based cryptocurrency profit tracker that culaculates profits based off of info from command line or CSV file'''
 from pycoingecko import CoinGeckoAPI
 import csv
 import sys
@@ -20,9 +20,6 @@ def main():
         parser.add_argument('host_currency', metavar="H", nargs=1, help="abbreviated name of Host currency (e.g. 'eur', 'usd'")
 
         cg = CoinGeckoAPI()
-
-
-
         args = parser.parse_args()
         #Current price calculation
         #Current data
@@ -43,6 +40,9 @@ def main():
         
     else:
         
+        #Total profit
+        total_p = 0
+
         with open('crypto.csv', 'r') as csvledger:
             #Inside a csv file...
             reader = csv.reader(csvledger,  skipinitialspace=True)
@@ -81,8 +81,10 @@ def main():
                 
                 #Change in value
                 cv = float(cvp) - ms
+                total_p += cv
                 print("Change in value:", cv)
                 print()
+        print("Total profit:", total_p)
 
 '''
 return_money_spent
@@ -118,11 +120,4 @@ def return_current_value(cgd, crypto, currency, amount):
 
     return cvp
 
-    
-    
-    
-    
-    
-
-    
 main()
